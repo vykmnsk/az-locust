@@ -5,3 +5,4 @@ __pycache__/
 Pipfile.lock
 env/
 tmp/
+*.log
