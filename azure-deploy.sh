@@ -16,8 +16,9 @@ AZ_FILE_SHARE=$PLT_AZ_FILE_SHARE
 AZ_DEPLOYMENT=$PLT_AZ_DEPLOYMENT
 HOST=$PLT_TEST_HOST # default SuT base host URL
 NUM_WORKERS=$PLT_NUM_WORKERS
-ARM_TEMPLATE="azure-arm.json"
+TEST_FILE=$PLT_TEST_FILE
 TEST_SRC="locust/"
+ARM_TEMPLATE="azure-arm.json"
 
 echo "create resource group: $AZ_RESOURCE_GROUP" | tee -a $LOG
 az group create \
@@ -58,6 +59,7 @@ az deployment group create \
         storageAccountName=$AZ_STORAGE_ACCOUNT \
         fileShareName=$AZ_FILE_SHARE \
         numWorkers=$NUM_WORKERS \
+        testFilePath="$TEST_SRC/$TEST_FILE" \
     -o json >> $LOG
 
  echo "navigate to Locust monitor:"

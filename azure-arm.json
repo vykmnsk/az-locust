@@ -26,6 +26,12 @@
                 "description": "Number of copies of Container Group to deploy"
             }
         },
+        "testFilePath": {
+            "type": "string",
+            "metadata": {
+                "description": "Path to the test file"
+            }
+        },        
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -75,7 +81,7 @@
                             "command": [
                                 "locust",
                                 "--locustfile",
-                                "./locust/locustfile.py",
+                                "[parameters('testFilePath')]",
                                 "--master",
                                 "--expect-workers",
                                 "[parameters('numWorkers')]",
@@ -149,7 +155,7 @@
                             "command": [
                                 "locust",
                                 "--locustfile",
-                                "./locust/locustfile.py",
+                                "[parameters('testFilePath')]",
                                 "--worker",
                                 "--master-host",
                                 "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', variables('masterContainerGroupName'))).ipAddress.ip]",
