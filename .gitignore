@@ -5,5 +5,6 @@ __pycache__/
 Pipfile.lock
 .vscode/
 env/
+venv/
 tmp/
 *.log

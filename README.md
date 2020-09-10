@@ -9,8 +9,10 @@ Verify python/pip are installed:
     python --version
     pip --version
 
-Install python libs
+ Create a virtual environment and install python libs (Windows CMD)
 
+    python -m venv venv
+    venv\Scripts\activate.bat
 	pip install --upgrade pip
 	pip install -r requirements.txt
 
@@ -31,6 +33,10 @@ No UI, 10 users, 1 new user hatches per second, run for 10 seconds
     docker build . -t alp-py-locust
     docker run -p 8089:8089 -it alp-py-locust -f ./locust/locustfile.py
 > navigate to http://localhost:8089/
+
+## Run webapp
+
+    flask run
 
 ### on AZURE with UI
 
