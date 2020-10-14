@@ -1,8 +1,4 @@
+python-dotenv
 azure-storage-blob
 azure-cosmosdb-table
-click
 Flask
-itsdangerous
-Jinja2
-MarkupSafe
-Werkzeug
