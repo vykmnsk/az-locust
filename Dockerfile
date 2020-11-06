@@ -1,14 +1,9 @@
-FROM python:3.7-alpine
+FROM locustio/locust:1.2.3
 
-COPY requirements.txt requirements.txt
-
-RUN apk --no-cache add --virtual=.build-dep build-base \
-    && apk --no-cache add bash g++ zeromq-dev libffi-dev \
-    && pip install -r requirements.txt \
-    && apk del .build-dep
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 EXPOSE 5557 5558 8089
-
-COPY locust/ locust/
-
-ENTRYPOINT ["locust"] 
+ENTRYPOINT ["locust"]
+CMD ["-f",  "/mnt/locust/locustfile.py"]
