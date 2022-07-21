@@ -1,47 +1,95 @@
-# Performance Testing with Locust on Azure
+# Performance Testing with Locust
 
 ## Setup
 
-Download _latest Python 3.x (64 bit)_ executable (msi) installer from [python.org](https://www.python.org/downloads/release)
+Download _latest Python 3.x (64 bit)_ executable (msi) installer from
+[python.org](https://www.python.org/downloads/release)
 
 Verify python/pip are installed:
 
     python --version
     pip --version
 
- Create a virtual environment and install python libs (Windows CMD)
+Create python virtual environment and install libs (Windows CMD)
 
-    python -m venv venv
-    venv\Scripts\activate.bat
-	pip install --upgrade pip
-	pip install -r requirements.txt
+    python -m venv .venv
+    .venv\Scripts\activate.bat
+    pip install --upgrade pip
+    pip install -r requirements.txt
+
+Create local .env file (clone/edit an external environment file)
+
+    cd tests/<test-dir>
+    cp .env.uat locust/.env
+    cd locust/
+    vi .env
+
+## Run without Locust
+
+This framework is designed to be able to run tests without Locust similar to other (functional) test automation frameworks.
+The automated tests will execute once and report results on the CLI screen (by default).
+It is based on Python's powerful and popular unit test library 'pytest'.
+
+When developing new PLTs it is highly recommended to start with creating pytests first and once they work call them from locustfile.
+This greatly simplifies coding/debugging as well as assists future maintenance and performance issues troubleshooting
+
+To run pytets:
+
+    cd tests/<test-dir>
+    pytest locust/tests.py
+    (add --pdb for debugging in CLI)
 
 ## Run Locust
 
-### Local machine
+### on Local (Windows) machine
 
-No UI, 10 users, 1 new user hatches per second, run for 10 seconds
+#### No UI
 
-    locust -f locust/locustfile.py --headless --host http://www.google.com -u 10 -r 1 -t 10s
+2 users hatching 0.5 per second, running for 10 seconds, saving report to a file
+check error code (Windows)
 
-with UI
+    cd tests/<test-dir>
+    locust -f locust/locustfile.py --headless -u 2 -r 0.5 -t 10s --loglevel debug --html report.html
+    echo %errorlevel%
 
+#### with UI
+
+    cd tests/<test-dir>
     locust -f locust/locustfile.py
-> navigate to http://localhost:8089/
 
+> navigate to <http://localhost:8089/>
 
-in Docker with UI
+### in local Docker (with UI)
 
-    docker build . -t alp-py-locust
-    docker run -p 8089:8089 -it alp-py-locust -f ./locust/locustfile.py
-> navigate to http://localhost:8089/
+    cd tests/<test-dir>
+    cp ../../libs/ -r ./locust/
+    docker build ../../ -t plt-locust-py-libs
+    docker run -p 8089:8089 -v "/$(pwd -W)/locust:/mnt/locust" plt-locust-py-libs
 
-### Azure cloud
+    when done:
+    rm ./locust/libs -rf
 
-Create Azure resources, upload test src, deploy locst master with workers
+> navigate to <http://localhost:8089/>
+
+### on Azure cloud (sandpit)
+
+Create local environment variables or .env file
+
+    PLT_TEST
+    PLT_TEST_WORKERS_CNT
+    PLT_TEST_DOCKER_IMAGE
+
+    PLT_AZ_RESOURCE_GROUP
+    PLT_AZ_LOCATION
+    PLT_AZ_STORAGE_ACCOUNT
+    PLT_AZ_FILE_SHARE
+    PLT_AZ_DEPLOYMENT
+
+Create Azure resources, upload test src, deploy locust master with workers
 
     az login
-    azure-deploy.sh 
+    bash az-upload-docker-img.sh
+    bash az-deploy.sh
 
 Read the output and navigate to the Azure generated URL
 
@@ -49,32 +97,4 @@ Read the output and navigate to the Azure generated URL
 
 Delete all Azure resource we created
 
-    azure-teardown.sh
-
-## Run webapp
-
-### Local machine
-set local environment variables with Azure values 
-
-    PLT_AZ_STORAGE_CONN_STRING 
-    PLT_AZ_CONTAINER_NAME
-
-execute in CLI
-
-    cd webapp
-    flask run
-
-### Azure cloud
-
-    sh azure-deploy-webapp.sh
-
-note the _storage connection string_ and _webapp URL_ in the output
-
-set these environment variables in Azure App Service configuration 
-
-    PLT_AZ_STORAGE_CONN_STRING
-    PLT_AZ_CONTAINER_NAME
-
-restart the webapp (Azure portal does it automatically)
-
-navigate to the _webapp URL_ displayed in deploy script output
+    bash azure-teardown.sh
